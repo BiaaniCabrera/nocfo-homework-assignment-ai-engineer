@@ -11,6 +11,7 @@ python3 run.py
 ```
 No external dependencies or additional setup tools are required.
 
+
 ## Architecture and Technical Approach
 
 All matching logic is located in:
@@ -39,6 +40,7 @@ If no attachment reaches this confidence threshold, the function returns `None`,
 
 *This fallback ensures accurate matching even when reference numbers are absent or unreliable.*
 
+
 ## Bidirectional Logic
 
 The two required functions:
@@ -47,22 +49,28 @@ The two required functions:
 
 Using the same two-stage logic in opposite directions to guarantee consistent and deterministic matching.
 
+
 ## Assumptions
 
 The matching logic relies on several practical assumptions based on how real-world bank data and attachments behave:
 
-**References**: Reference numbers are the strongest possible matching signal. If reference information is missing or inconsistent, heuristics decide the match.
+**References**
+Reference numbers are the strongest possible matching signal. If reference information is missing or inconsistent, heuristics decide the match.
 
-**Amount Interpretation**:Transaction amounts may be negative (expenses) or positive (incoming payments), while attachment amounts are always positive. Because the sign does not reliably reflect document type, comparisons use absolute values.
+**Amount Interpretation**
+Transaction amounts may be negative (expenses) or positive (incoming payments), while attachment amounts are always positive. Because the sign does not reliably reflect document type, comparisons use absolute values.
 
-**Payment Dates**: Payment dates often differ from due dates due to early payments, late payments, or bank processing delays.
+**Payment Dates**
+Payment dates often differ from due dates due to early payments, late payments, or bank processing delays.
 Therefore, the algorithm evaluates date proximity, not equality between the `transaction date` and all relevant attachment dates (`invoicing_date`, `due_date`, or `receiving_date`), using the minimum distance to any attachment date.
 
-
-**Counterparty Location Variation**: Depending on whether the attachment is a sales invoice, purchase invoice, or receipt, the counterparty name may appear under `recipient`, `issuer`, or `supplier`. 
+**Counterparty Location Variation**
+Depending on whether the attachment is a sales invoice, purchase invoice, or receipt, the counterparty name may appear under `recipient`, `issuer`, or `supplier`. 
 To avoid false negatives, the algorithm evaluates all these fields and chooses the best name similarity score.
 
-**Ambiguity Fallback**: If neither reference matching nor heuristic scoring yields a confident match, the function returns `None` instead of making an unsafe guess.
+**Ambiguity Fallback**
+If neither reference matching nor heuristic scoring yields a confident match, the function returns `None` instead of making an unsafe guess.
+
 
 ## Demonstration Correctness
 `run.py` validates the solution by comparing all produced matches against the expected results.
